@@ -1,16 +1,28 @@
 import { useState } from "react";
 
-const FormCategory = () => {
+const FormCategory = ({ setCategories }) => {
   const [isShow, setIsShow] = useState(false);
-  const [categoryData, setCategoryData] = useState({
+  const [categoryForm, setCategoryForm] = useState({
     title: "",
     description: "",
   });
 
+  const handleChange = (e) => {
+    setCategoryForm({ ...categoryForm, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(categoryData);
-    setCategoryData({ title: "", description: "" });
+    console.log(categoryForm);
+    setCategories((prevState) => [
+      ...prevState,
+      {
+        ...categoryForm,
+        createdAt: new Date(),
+        id: new Date().getTime(),
+      },
+    ]);
+    setCategoryForm({ title: "", description: "" });
   };
 
   return (
@@ -39,10 +51,8 @@ const FormCategory = () => {
             name="title"
             placeholder="Enter category name"
             className="p-3 rounded-lg bg-slate-600 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={categoryData.title}
-            onChange={(e) =>
-              setCategoryData({ ...categoryData, title: e.target.value })
-            }
+            value={categoryForm.title}
+            onChange={handleChange}
           />
         </div>
 
@@ -56,10 +66,8 @@ const FormCategory = () => {
             name="description"
             placeholder="Enter category description"
             className="p-3 rounded-lg bg-slate-600 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={categoryData.description}
-            onChange={(e) =>
-              setCategoryData({ ...categoryData, description: e.target.value })
-            }
+            value={categoryForm.description}
+            onChange={handleChange}
           />
         </div>
 

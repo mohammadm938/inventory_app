@@ -1,4 +1,30 @@
-const FormProduct = () => {
+import { useState } from "react";
+
+const FormProduct = ({ categories, setProducts }) => {
+  const [productForm, setProductForm] = useState({
+    title: "",
+    quantity: 0,
+    category: "",
+  });
+
+  const handleChange = (e) => {
+    setProductForm({ ...productForm, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(productForm);
+    setProducts((prevState) => [
+      ...prevState,
+      {
+        ...productForm,
+        createdAt: new Date(),
+        id: new Date().getTime(),
+      },
+    ]);
+    setProductForm({ title: "", quantity: 0, category: "" });
+  };
+
   return (
     <div className="mb-8">
       <h2 className="text-2xl text-white font-bold mb-6">Add New Product</h2>
@@ -12,10 +38,12 @@ const FormProduct = () => {
           </label>
           <input
             type="text"
-            name="product-title"
+            name="title"
             id="product-title"
             className="w-full px-4 py-3 bg-slate-600 rounded-lg border border-slate-500 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             placeholder="Enter product title"
+            onChange={handleChange}
+            value={productForm.title}
           />
         </div>
 
@@ -28,11 +56,13 @@ const FormProduct = () => {
           </label>
           <input
             type="number"
-            name="product-quantity"
+            name="quantity"
             id="product-quantity"
             className="w-full px-4 py-3 bg-slate-600 rounded-lg border border-slate-500 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             placeholder="Enter quantity"
             min="0"
+            onChange={handleChange}
+            value={productForm.quantity}
           />
         </div>
 
@@ -44,14 +74,22 @@ const FormProduct = () => {
             Category
           </label>
           <select
-            name="product-category"
+            value={productForm.category}
+            onChange={handleChange}
+            name="category"
             id="product-category"
             className="w-full px-4 py-3 bg-slate-600 rounded-lg border border-slate-500 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none cursor-pointer"
           >
             <option value="" disabled selected>
               Select a category
             </option>
-            {/* Options will be added dynamically */}
+            {categories.map((category) => {
+              return (
+                <option key={category.id} value={category.id}>
+                  {category.title}
+                </option>
+              );
+            })}
           </select>
         </div>
 
@@ -60,6 +98,7 @@ const FormProduct = () => {
             id="add-new-product"
             type="submit"
             className="flex-1 bg-blue-600 hover:bg-blue-500 text-white rounded-lg py-3 px-4 transition-colors font-medium"
+            onClick={handleSubmit}
           >
             Add Product
           </button>
