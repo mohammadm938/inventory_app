@@ -18,6 +18,7 @@ const FormProduct = ({ categories, setProducts }) => {
       ...prevState,
       {
         ...productForm,
+        quantity: parseInt(productForm.quantity),
         createdAt: new Date(),
         id: new Date().getTime(),
       },
