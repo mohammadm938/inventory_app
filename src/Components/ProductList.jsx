@@ -5,7 +5,20 @@ const ProductList = ({ categories, products, setProducts }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("newest");
   const [currentPage, setCurrentPage] = useState(1);
+  const [editingProduct, setEditingProduct] = useState(null);
   const productsPerPage = 5;
+
+  //   Edir Product
+  const handleEdit = (product) => {
+    setEditingProduct(product);
+  };
+
+  const handleSave = (updatedProduct) => {
+    setProducts(
+      products.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
+    );
+    setEditingProduct(null);
+  };
 
   // Filter and sort products
   const filteredProducts = products
@@ -55,9 +68,17 @@ const ProductList = ({ categories, products, setProducts }) => {
     );
   };
 
+  const handleRemoveProduct = (productId) => {
+    setProducts((prevProducts) =>
+      prevProducts.filter((product) => product.id !== productId)
+    );
+  };
+
   return (
     <div className="bg-slate-800 p-6 rounded-xl shadow-lg">
+      {/* product header */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {/* product search */}
         <div className="space-y-2">
           <label
             htmlFor="search-input"
@@ -79,6 +100,7 @@ const ProductList = ({ categories, products, setProducts }) => {
           </div>
         </div>
 
+        {/* product filter */}
         <div className="space-y-2">
           <label
             htmlFor="sort-products"
@@ -101,6 +123,7 @@ const ProductList = ({ categories, products, setProducts }) => {
         </div>
       </div>
 
+      {/* product view */}
       <div className="overflow-x-auto rounded-lg border border-slate-700">
         <table className="min-w-full divide-y divide-slate-700">
           <thead className="bg-slate-750">
@@ -177,10 +200,16 @@ const ProductList = ({ categories, products, setProducts }) => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex space-x-3">
-                      <button className="text-blue-400 hover:text-blue-300 p-1 rounded">
+                      <button
+                        onClick={() => handleEdit(product)}
+                        className="text-blue-400 hover:text-blue-300 p-1 rounded"
+                      >
                         <FiEdit2 size={18} />
                       </button>
-                      <button className="text-red-400 hover:text-red-300 p-1 rounded">
+                      <button
+                        onClick={() => handleRemoveProduct(product.id)}
+                        className="text-red-400 hover:text-red-300 p-1 rounded"
+                      >
                         <FiTrash2 size={18} />
                       </button>
                     </div>
@@ -192,6 +221,7 @@ const ProductList = ({ categories, products, setProducts }) => {
         </table>
       </div>
 
+      {/* pagination */}
       {filteredProducts.length > 0 && (
         <div className="mt-6 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
           <div className="text-sm text-slate-400">
@@ -229,6 +259,126 @@ const ProductList = ({ categories, products, setProducts }) => {
             >
               Next
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* edit modal */}
+      {editingProduct && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            {/* Background overlay */}
+            <div
+              className="fixed inset-0 -z-50 transition-opacity"
+              aria-hidden="true"
+              onClick={() => setEditingProduct(null)}
+            >
+              <div className="absolute inset-0 bg-gray-900 bg-opacity-75"></div>
+            </div>
+
+            {/* Modal panel */}
+            <div className="inline-block align-bottom bg-slate-800 rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="px-6 py-5 sm:px-8 sm:py-6">
+                <div className="flex justify-between items-start">
+                  <h3 className="text-2xl font-bold text-white">
+                    Edit Product
+                  </h3>
+                  <button
+                    onClick={() => setEditingProduct(null)}
+                    className="text-slate-400 hover:text-white"
+                  >
+                    <svg
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="mt-6 space-y-5">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
+                      Product Name
+                    </label>
+                    <input
+                      type="text"
+                      value={editingProduct.title}
+                      onChange={(e) =>
+                        setEditingProduct({
+                          ...editingProduct,
+                          title: e.target.value,
+                        })
+                      }
+                      className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      autoFocus
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
+                      Category
+                    </label>
+                    <select
+                      value={editingProduct.category}
+                      onChange={(e) =>
+                        setEditingProduct({
+                          ...editingProduct,
+                          category: e.target.value,
+                        })
+                      }
+                      className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      {categories.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">
+                      Quantity
+                    </label>
+                    <input
+                      type="number"
+                      value={editingProduct.quantity}
+                      onChange={(e) =>
+                        setEditingProduct({
+                          ...editingProduct,
+                          quantity: parseInt(e.target.value) || 0,
+                        })
+                      }
+                      className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      min="0"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-6 py-4 sm:px-8 bg-slate-750 rounded-b-xl flex justify-end space-x-3">
+                <button
+                  onClick={() => setEditingProduct(null)}
+                  className="px-5 py-2 rounded-lg border border-slate-600 text-slate-300 hover:bg-slate-700 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleSave(editingProduct)}
+                  className="px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-500 transition-colors"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
