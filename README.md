@@ -46,7 +46,7 @@ A modern inventory management application built with React and Tailwind CSS that
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/inventory-app.git
+   git clone https://github.com/mohammadm938/inventory_app.git
    cd inventory-app
    ```
 
